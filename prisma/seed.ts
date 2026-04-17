@@ -8,10 +8,10 @@ async function seedUsers() {
   const adminPassword = await bcrypt.hash("admin123", 10)
 
   await prisma.user.upsert({
-    where: { email: "admin@luminar.it" },
+    where: { email: "admin@novapratalabs.com" },
     update: {},
     create: {
-      email: "admin@luminar.it",
+      email: "admin@novapratalabs.com",
       name: "Admin Master",
       password: adminPassword,
       role: Role.ADMIN,
@@ -19,9 +19,9 @@ async function seedUsers() {
   })
 
   const employees: Array<{ name: string; email: string; role: Role }> = [
-    { name: "Joao Silva", email: "joao@luminar.it", role: Role.USER },
-    { name: "Maria Oliveira", email: "maria@luminar.it", role: Role.USER },
-    { name: "Carlos Souza", email: "carlos@luminar.it", role: Role.USER },
+    { name: "Joao Silva", email: "joao@novapratalabs.com", role: Role.USER },
+    { name: "Maria Oliveira", email: "maria@novapratalabs.com", role: Role.USER },
+    { name: "Carlos Souza", email: "carlos@novapratalabs.com", role: Role.USER },
   ]
 
   for (const employee of employees) {

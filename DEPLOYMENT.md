@@ -1,4 +1,4 @@
-# 🚀 Deployment Guide - Luminar IT
+﻿# 🚀 Deployment Guide - NovaPrata Labs
 
 ## GitHub Setup
 
@@ -28,7 +28,7 @@ Your repository is ready for GitHub. Follow these steps:
 Using Personal Access Token:
 
 ```bash
-cd /path/to/luminar-it
+cd /path/to/novapratalabs
 git remote add origin https://github.com/cottonnovaprata/ativosTI.git
 git push -u origin main
 ```
@@ -65,7 +65,7 @@ git push -u origin main
 Vercel will show a configuration screen. Add these environment variables:
 
 ```
-DATABASE_URL=postgresql://user:password@localhost:5432/luminar_it
+DATABASE_URL=postgresql://user:password@localhost:5432/novapratalabs
 JWT_SECRET=your-super-secret-jwt-key-here-min-32-chars
 NEXTAUTH_URL=https://your-vercel-domain.vercel.app
 NEXTAUTH_SECRET=your-nextauth-secret-key
@@ -145,7 +145,7 @@ To limit deployments, configure in Vercel Settings → Git:
 
 ```bash
 # Database
-DATABASE_URL="postgresql://user:password@localhost:5432/luminar_it"
+DATABASE_URL="postgresql://user:password@localhost:5432/novapratalabs"
 
 # Authentication
 JWT_SECRET="your-secret-key-min-32-chars"

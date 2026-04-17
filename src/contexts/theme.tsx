@@ -20,7 +20,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     // Inicializar no cliente
     setIsClient(true)
 
-    const savedTheme = localStorage.getItem("luminar-theme") as Theme | null
+    const savedTheme = localStorage.getItem("novapratalabs-theme") as Theme | null
     const systemTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
     const initialTheme = savedTheme || systemTheme
 
@@ -33,7 +33,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.setAttribute("data-theme", newTheme)
     root.classList.toggle("dark", newTheme === "dark")
     root.classList.toggle("light", newTheme === "light")
-    localStorage.setItem("luminar-theme", newTheme)
+    localStorage.setItem("novapratalabs-theme", newTheme)
   }
 
   const toggleTheme = () => {

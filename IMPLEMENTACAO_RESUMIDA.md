@@ -1,4 +1,4 @@
-# 🎨 Luminar IT - Transformação UI/UX Resumida
+﻿# 🎨 NovaPrata Labs - Transformação UI/UX Resumida
 
 ## O Que Foi Feito
 
@@ -95,5 +95,5 @@ Active:    active:scale-95
 
 ✅ **Pronto para Produção Premium**
 
-Luminar IT agora compete com Linear, Vercel e Stripe em qualidade visual.
+NovaPrata Labs agora compete com Linear, Vercel e Stripe em qualidade visual.
 

@@ -53,7 +53,7 @@ export function DashboardLayoutClient({
             </div>
             {!isCollapsed && (
               <span className="text-sm font-semibold tracking-tight whitespace-nowrap" style={{ color: "var(--text-primary)" }}>
-                Luminar IT
+                NovaPrata Labs
               </span>
             )}
           </Link>

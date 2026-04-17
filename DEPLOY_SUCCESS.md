@@ -1,4 +1,4 @@
-# ✅ Deploy Bem-Sucedido - Luminar IT no Vercel
+﻿# ✅ Deploy Bem-Sucedido - NovaPrata Labs no Vercel
 
 ## 🎯 Status do Projeto
 
@@ -40,7 +40,7 @@ NEXT_PUBLIC_API_URL=https://seu-dominio-vercel.vercel.app
 
 1. No Vercel Dashboard, clique em "Storage"
 2. "Create Database" → "Postgres"
-3. Dê um nome: `luminar-it-db`
+3. Dê um nome: `novapratalabs-db`
 4. Clique "Create"
 5. **Copie a connection string** que aparecerá
 6. Cole em `DATABASE_URL` nas Environment Variables
@@ -130,7 +130,7 @@ Verifique no arquivo `.env` ou no `prisma/seed.ts` para dados padrão.
 
 Se houver usuário de teste:
 ```
-Email: admin@luminar.com (ou outro)
+Email: admin@novapratalabs.com (ou outro)
 Senha: senha-teste (confira no código)
 ```
 
@@ -213,7 +213,7 @@ Você vai ver tudo em tempo real no Vercel Dashboard.
 
 ## 🎉 Parabéns!
 
-Seu projeto **Luminar IT** está:
+Seu projeto **NovaPrata Labs** está:
 - ✅ No GitHub
 - ✅ Deployado no Vercel
 - ✅ Live e acessível pela internet

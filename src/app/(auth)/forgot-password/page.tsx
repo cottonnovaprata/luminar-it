@@ -24,14 +24,14 @@ export default function ForgotPasswordPage() {
             Para recuperar o acesso, entre em contato com o suporte de TI e solicite
             a redefinicao da senha.
           </p>
-          <p>Usuario padrao para testes: admin@luminar.it</p>
+          <p>Usuario padrao para testes: admin@novapratalabs.com</p>
         </CardContent>
         <CardFooter className="flex-col sm:flex-row">
           <Button asChild className="w-full sm:w-auto">
             <Link href="/login">Voltar ao login</Link>
           </Button>
           <Button asChild variant="outline" className="w-full sm:w-auto">
-            <a href="mailto:suporte@luminar.it">Falar com suporte</a>
+            <a href="mailto:suporte@novapratalabs.com">Falar com suporte</a>
           </Button>
         </CardFooter>
       </Card>

@@ -1,8 +1,8 @@
-# 🎨 Design System - Luminar IT Premium
+﻿# 🎨 Design System - NovaPrata Labs Premium
 
 ## Versão 2.0 - UI/UX Refinement
 
-Transformação visual do Luminar IT para um nível de qualidade premium (Linear, Vercel, Stripe).
+Transformação visual do NovaPrata Labs para um nível de qualidade premium (Linear, Vercel, Stripe).
 
 ---
 
@@ -334,4 +334,4 @@ Nenhuma funcionalidade foi alterada, apenas visual e UX.
 ✅ Responsiveness perfeito
 ✅ Sem quebra de funcionalidade
 
-**Luminar IT agora é um dashboard ao nível de Linear, Vercel e Stripe!**
+**NovaPrata Labs agora é um dashboard ao nível de Linear, Vercel e Stripe!**

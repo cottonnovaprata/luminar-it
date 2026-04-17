@@ -120,9 +120,9 @@ export async function POST(request: Request) {
       const report = await buildReportFile(reportInput)
       await sendReportByEmail({
         to,
-        subject: `Luminar IT - ${templateLabel(reportInput.template)} (${formatLabel(reportInput.format)})`,
+        subject: `NovaPrata Labs - ${templateLabel(reportInput.template)} (${formatLabel(reportInput.format)})`,
         html: `
-          <h2>Relatorio Luminar IT</h2>
+          <h2>Relatorio NovaPrata Labs</h2>
           <p>Segue em anexo o relatorio solicitado.</p>
           <ul>
             <li><strong>Modelo:</strong> ${templateLabel(reportInput.template)}</li>

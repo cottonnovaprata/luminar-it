@@ -1,4 +1,4 @@
-# 🔐 QR Code Seguro para Ativos - Luminar IT
+﻿# 🔐 QR Code Seguro para Ativos - NovaPrata Labs
 
 ## ✅ Sistema Implementado
 

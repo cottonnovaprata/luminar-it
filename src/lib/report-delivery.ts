@@ -12,7 +12,7 @@ function resolveReportTokenSecret() {
   }
 
   if (process.env.NODE_ENV !== "production") {
-    return new TextEncoder().encode("luminar-local-report-secret")
+    return new TextEncoder().encode("novapratalabs-local-report-secret")
   }
 
   throw new Error("REPORTS_TOKEN_SECRET ou JWT_SECRET nao configurado")
@@ -58,7 +58,7 @@ export async function sendReportByEmail(params: {
     throw new Error("RESEND_API_KEY nao configurada")
   }
 
-  const from = process.env.REPORTS_FROM_EMAIL || "Luminar IT <reports@luminar.it>"
+  const from = process.env.REPORTS_FROM_EMAIL || "NovaPrata Labs <reports@novapratalabs.com>"
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -102,7 +102,7 @@ export async function sendReportByWhatsApp(params: {
 
   const downloadUrl = `${resolvePublicBaseUrl()}/api/reports/download?token=${encodeURIComponent(params.downloadToken)}`
   const bodyText = [
-    "Relatorio Luminar IT pronto.",
+    "Relatorio NovaPrata Labs pronto.",
     `Modelo: ${params.templateName}`,
     `Formato: ${params.formatLabel}`,
     `Periodo: ${params.periodLabel}`,

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Luminar IT",
+  title: "NovaPrata Labs",
   description: "Gerenciamento profissional de infraestrutura de TI",
 };
 

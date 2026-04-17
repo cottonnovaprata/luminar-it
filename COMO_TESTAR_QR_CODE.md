@@ -1,4 +1,4 @@
-# 🔍 Como Testar QR Code - Luminar IT
+﻿# 🔍 Como Testar QR Code - NovaPrata Labs
 
 ## ⚠️ Problema Encontrado
 
@@ -33,14 +33,14 @@ http://192.168.1.101:3000/assets/cmo1yot6t0001vxxwx0k3rcr7/qr-test
 ### **Opção A: Desabilitar Turbopack**
 
 ```bash
-cd /sessions/eloquent-busy-mendel/mnt/luminar-it
+cd /sessions/eloquent-busy-mendel/mnt/novapratalabs
 TURBOPACK=0 npm run dev
 ```
 
 ### **Opção B: Limpar Cache e Reconstruir**
 
 ```bash
-cd /sessions/eloquent-busy-mendel/mnt/luminar-it
+cd /sessions/eloquent-busy-mendel/mnt/novapratalabs
 rm -rf .next .turbo node_modules/.turbopack
 npm install
 npm run dev
@@ -49,7 +49,7 @@ npm run dev
 ### **Opção C: Usar Build Production**
 
 ```bash
-cd /sessions/eloquent-busy-mendel/mnt/luminar-it
+cd /sessions/eloquent-busy-mendel/mnt/novapratalabs
 npm run build
 npm run start
 ```

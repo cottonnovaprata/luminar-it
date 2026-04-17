@@ -60,7 +60,7 @@ function LoginContent() {
           <div className="bg-primary p-2 rounded-lg">
             <Monitor className="w-6 h-6 text-white" />
           </div>
-          Luminar IT
+          NovaPrata Labs
         </div>
 
         <div className="relative z-10 max-w-md">
@@ -84,7 +84,7 @@ function LoginContent() {
         </div>
 
         <div className="relative z-10 text-sm text-zinc-500">
-          © {new Date().getFullYear()} Luminar IT. Managed Infrastructure.
+          © {new Date().getFullYear()} NovaPrata Labs. Managed Infrastructure.
         </div>
       </div>
 
@@ -167,7 +167,10 @@ function LoginContent() {
           </Button>
 
           <p className="text-center text-xs text-muted-foreground pt-4">
-            Precisa de ajuda? <Link href="mailto:suporte@luminar.it" className="underline hover:text-primary">Entre em contato com o suporte</Link>
+            Precisa de ajuda?{" "}
+            <Link href="mailto:suporte@novapratalabs.com" className="underline hover:text-primary">
+              Entre em contato com o suporte
+            </Link>
           </p>
         </div>
       </div>
