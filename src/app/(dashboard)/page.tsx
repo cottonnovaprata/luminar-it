@@ -140,7 +140,7 @@ export default async function DashboardPage() {
           <CardHeader>
             <CardTitle>Ações Prioritárias</CardTitle>
             <CardDescription>Itens que requerem sua atenção imediata.</CardDescription>
-          </Header>
+          </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-start gap-4 p-3 rounded-lg bg-red-500/5 border border-red-500/10">
               <div className="mt-1 bg-red-500/10 p-1.5 rounded-full">
