@@ -18,8 +18,6 @@ function resolveReportTokenSecret() {
   throw new Error("REPORTS_TOKEN_SECRET ou JWT_SECRET nao configurado")
 }
 
-const REPORT_TOKEN_SECRET = resolveReportTokenSecret()
-
 function resolvePublicBaseUrl() {
   const explicit = process.env.REPORTS_PUBLIC_BASE_URL || process.env.NEXT_PUBLIC_APP_URL
   if (explicit) {
@@ -34,15 +32,17 @@ function resolvePublicBaseUrl() {
 }
 
 export async function createReportDownloadToken(payload: DownloadTokenPayload) {
+  const reportTokenSecret = resolveReportTokenSecret()
   return new SignJWT(payload as unknown as Record<string, unknown>)
     .setProtectedHeader({ alg: "HS256" })
     .setIssuedAt()
     .setExpirationTime("24h")
-    .sign(REPORT_TOKEN_SECRET)
+    .sign(reportTokenSecret)
 }
 
 export async function verifyReportDownloadToken(token: string) {
-  const { payload } = await jwtVerify(token, REPORT_TOKEN_SECRET)
+  const reportTokenSecret = resolveReportTokenSecret()
+  const { payload } = await jwtVerify(token, reportTokenSecret)
   return payload as unknown as DownloadTokenPayload
 }
 
