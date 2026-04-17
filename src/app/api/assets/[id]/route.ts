@@ -6,6 +6,11 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json({ error: "NÃ£o autorizado" }, { status: 401 })
+  }
+
   try {
     const { id } = await params
 

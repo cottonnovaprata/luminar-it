@@ -27,7 +27,8 @@ export async function middleware(request: NextRequest) {
     request.nextUrl.pathname.startsWith("/vault") ||
     request.nextUrl.pathname.startsWith("/network") ||
     request.nextUrl.pathname.startsWith("/maintenances") ||
-    request.nextUrl.pathname.startsWith("/reports")
+    request.nextUrl.pathname.startsWith("/reports") ||
+    request.nextUrl.pathname.startsWith("/settings")
   ) {
     if (!token) {
       // Armazenar URL de origem para redirecionar após login
@@ -61,6 +62,7 @@ export const config = {
     "/network/:path*", 
     "/maintenances/:path*", 
     "/reports/:path*",
+    "/settings/:path*",
     "/login"
   ],
 }

@@ -1,7 +1,13 @@
 import { NextResponse } from "next/server"
 import prisma from "@/lib/prisma"
+import { getSession } from "@/lib/auth"
 
 export async function GET(request: Request) {
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json({ error: "NÃ£o autorizado" }, { status: 401 })
+  }
+
   const { searchParams } = new URL(request.url)
   const assetId = searchParams.get("assetId")
 
@@ -28,6 +34,11 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  const session = await getSession()
+  if (!session) {
+    return NextResponse.json({ error: "NÃ£o autorizado" }, { status: 401 })
+  }
+
   try {
     const body = await request.json()
     const { 

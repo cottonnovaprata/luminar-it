@@ -2,7 +2,7 @@
 
 import React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Monitor, LayoutDashboard, Box, Users, Lock, Network, PenTool, BarChart3, Settings, ChevronLeft, Search, Bell, LogOut, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -25,6 +25,16 @@ export function DashboardLayoutClient({
 }) {
   const [isCollapsed, setIsCollapsed] = React.useState(false)
   const pathname = usePathname()
+  const router = useRouter()
+
+  async function handleLogout() {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" })
+    } finally {
+      router.push("/login")
+      router.refresh()
+    }
+  }
 
   return (
     <div className="flex min-h-screen" style={{ background: "var(--bg-primary)", color: "var(--text-primary)" }}>
@@ -126,12 +136,13 @@ export function DashboardLayoutClient({
             <Settings className="h-4 w-4 sm:h-5 sm:w-5 min-w-[16px] sm:min-w-[20px] flex-shrink-0" />
             {!isCollapsed && <span className="whitespace-nowrap">Configurações</span>}
           </Link>
-          <Link
-            href="/login"
+          <button
+            type="button"
             className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2.5 text-xs sm:text-sm font-medium transition-all duration-200"
+              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-xs sm:text-sm font-medium transition-all duration-200"
             )}
             style={{ color: "var(--text-tertiary)" }}
+            onClick={handleLogout}
             onMouseEnter={(e) => {
               e.currentTarget.style.background = "var(--status-error-bg)"
               e.currentTarget.style.color = "var(--status-error)"
@@ -143,7 +154,7 @@ export function DashboardLayoutClient({
           >
             <LogOut className="h-4 w-4 sm:h-5 sm:w-5 min-w-[16px] sm:min-w-[20px] flex-shrink-0" />
             {!isCollapsed && <span className="whitespace-nowrap">Sair</span>}
-          </Link>
+          </button>
         </div>
       </aside>
 

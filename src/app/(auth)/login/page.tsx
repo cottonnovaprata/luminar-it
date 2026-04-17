@@ -167,7 +167,7 @@ function LoginContent() {
           </Button>
 
           <p className="text-center text-xs text-muted-foreground pt-4">
-            Precisa de ajuda? <Link href="#" className="underline hover:text-primary">Entre em contato com o suporte</Link>
+            Precisa de ajuda? <Link href="mailto:suporte@luminar.it" className="underline hover:text-primary">Entre em contato com o suporte</Link>
           </p>
         </div>
       </div>
