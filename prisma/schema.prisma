@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  USER
+  TECHNICIAN
+}
+
+enum MaintenanceStatus {
+  PENDENTE
+  EM_PROGRESSO
+  CONCLUIDO
+  CANCELADO
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  assets    Asset[]
+
+  @@map("users")
+}
+
+model Sector {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  assets    Asset[]
+
+  @@map("sectors")
+}
+
+model Asset {
+  id              String   @id @default(cuid())
+  tag             String   @unique
+  name            String
+  type            String
+  brand           String
+  model           String
+  serialNumber    String?
+  patrimony       String?
+  ipAddress       String?
+  hostname        String?
+  operatingSystem String?
+  status          String   @default("DISPONIVEL")
+  criticality     String   @default("MEDIA")
+  notes           String?
+  userId          String?
+  sectorId        String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user         User?         @relation(fields: [userId], references: [id])
+  sector       Sector?       @relation(fields: [sectorId], references: [id])
+  maintenances Maintenance[]
+
+  @@map("assets")
+}
+
+model Maintenance {
+  id                  String            @id @default(cuid())
+  assetId             String
+  problem             String
+  description         String?
+  status              MaintenanceStatus @default(PENDENTE)
+  technician          String
+  cost                Float?
+  startDate           DateTime          @default(now())
+  endDate             DateTime?
+  previousAssetStatus String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  asset Asset @relation(fields: [assetId], references: [id])
+
+  @@map("maintenances")
+}

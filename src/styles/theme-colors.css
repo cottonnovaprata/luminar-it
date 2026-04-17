@@ -1,0 +1,150 @@
+/* Theme Color Tokens */
+
+/* Dark Mode (Default) */
+[data-theme="dark"],
+:root {
+  /* Backgrounds */
+  --bg-primary: #0F111A;
+  --bg-secondary: #151823;
+  --bg-tertiary: #1a1f2e;
+  --bg-hover: rgba(59, 130, 246, 0.05);
+  --bg-muted: rgba(255, 255, 255, 0.02);
+
+  /* Text */
+  --text-primary: #ffffff;
+  --text-secondary: #e5e7eb;
+  --text-tertiary: #a1a5b0;
+  --text-muted: #6b7280;
+
+  /* Borders */
+  --border-primary: rgba(255, 255, 255, 0.06);
+  --border-secondary: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(59, 130, 246, 0.3);
+
+  /* Cards & Components */
+  --card-bg: #151823;
+  --card-border: rgba(255, 255, 255, 0.06);
+
+  /* Inputs */
+  --input-bg: #1a1f2e;
+  --input-bg-focus: #202734;
+  --input-border: rgba(255, 255, 255, 0.08);
+  --input-border-focus: rgba(59, 130, 246, 0.3);
+  --input-text: #e5e7eb;
+  --input-placeholder: #6b7280;
+
+  /* Buttons */
+  --btn-primary-bg: #3b82f6;
+  --btn-primary-bg-hover: #2563eb;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: rgba(229, 231, 235, 0.1);
+  --btn-secondary-hover: rgba(229, 231, 235, 0.15);
+  --btn-ghost-hover: rgba(255, 255, 255, 0.08);
+
+  /* Status Colors */
+  --status-success: #10b981;
+  --status-success-bg: rgba(16, 185, 129, 0.15);
+  --status-warning: #f59e0b;
+  --status-warning-bg: rgba(245, 158, 11, 0.15);
+  --status-error: #ef4444;
+  --status-error-bg: rgba(239, 68, 68, 0.15);
+  --status-info: #3b82f6;
+  --status-info-bg: rgba(59, 130, 246, 0.15);
+
+  /* Sidebar */
+  --sidebar-bg: #0F111A;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-item-hover: rgba(255, 255, 255, 0.04);
+  --sidebar-item-active-bg: rgba(59, 130, 246, 0.08);
+  --sidebar-item-active-border: rgba(59, 130, 246, 0.3);
+  --sidebar-item-active-text: #ffffff;
+
+  /* Topbar */
+  --topbar-bg: #0F111A;
+  --topbar-border: rgba(255, 255, 255, 0.05);
+
+  /* Modal */
+  --modal-bg: #151823;
+  --modal-border: rgba(255, 255, 255, 0.06);
+  --modal-overlay: rgba(0, 0, 0, 0.5);
+}
+
+/* Light Mode */
+[data-theme="light"] {
+  /* Backgrounds */
+  --bg-primary: #f3f4f6;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #eef2f7;
+  --bg-hover: #f0f4f9;
+  --bg-muted: #fafbfc;
+
+  /* Text */
+  --text-primary: #0a0e27;
+  --text-secondary: #1e293b;
+  --text-tertiary: #64748b;
+  --text-muted: #94a3b8;
+
+  /* Borders */
+  --border-primary: #dce4f0;
+  --border-secondary: #cad5e3;
+  --border-hover: #3b82f6;
+
+  /* Cards & Components */
+  --card-bg: #ffffff;
+  --card-border: #dce4f0;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+
+  /* Inputs */
+  --input-bg: #f8fafc;
+  --input-bg-focus: #f1f5f9;
+  --input-border: #cbd5e1;
+  --input-border-focus: #3b82f6;
+  --input-text: #0a0e27;
+  --input-placeholder: #94a3b8;
+
+  /* Buttons */
+  --btn-primary-bg: #3b82f6;
+  --btn-primary-bg-hover: #2563eb;
+  --btn-primary-text: #ffffff;
+  --btn-secondary-bg: #e0e7ff;
+  --btn-secondary-hover: #c7d2fe;
+  --btn-ghost-hover: #f1f5f9;
+
+  /* Status Colors */
+  --status-success: #10b981;
+  --status-success-bg: #d1fae5;
+  --status-warning: #f59e0b;
+  --status-warning-bg: #fef3c7;
+  --status-error: #ef4444;
+  --status-error-bg: #fee2e2;
+  --status-info: #3b82f6;
+  --status-info-bg: #dbeafe;
+
+  /* Sidebar */
+  --sidebar-bg: #ffffff;
+  --sidebar-border: #dce4f0;
+  --sidebar-item-hover: #f8fafc;
+  --sidebar-item-active-bg: #eff6ff;
+  --sidebar-item-active-border: #3b82f6;
+  --sidebar-item-active-text: #1e40af;
+  --sidebar-item-active-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+
+  /* Topbar */
+  --topbar-bg: #ffffff;
+  --topbar-border: #dce4f0;
+
+  /* Modal */
+  --modal-bg: #ffffff;
+  --modal-border: #dce4f0;
+  --modal-overlay: rgba(0, 0, 0, 0.3);
+}
+
+/* Smooth theme transitions */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Avoid transition on initial load */
+.no-transition * {
+  transition: none !important;
+}
