@@ -9,10 +9,17 @@ export async function GET() {
   }
 
   try {
-    const [totalAssets, totalUsers, maintenanceCount, assetsByStatus] = await Promise.all([
+    const [totalAssets, totalUsers, maintenanceCount, pendingActions, assetsByStatus] = await Promise.all([
       prisma.asset.count(),
       prisma.user.count(),
       prisma.asset.count({ where: { status: "MANUTENCAO" } }),
+      prisma.maintenance.count({
+        where: {
+          status: {
+            in: ["PENDENTE", "EM_PROGRESSO"],
+          },
+        },
+      }),
       prisma.asset.groupBy({
         by: ["status"],
         _count: { _all: true }
@@ -29,6 +36,7 @@ export async function GET() {
       totalAssets,
       totalUsers,
       maintenanceCount,
+      alertsCount: pendingActions,
       assetsByStatus,
       recentAssets
     })

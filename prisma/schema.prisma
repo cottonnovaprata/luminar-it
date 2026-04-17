@@ -29,6 +29,7 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   assets    Asset[]
+  vaultAccessLogs VaultAccessLog[]
 
   @@map("users")
 }
@@ -66,6 +67,7 @@ model Asset {
   user         User?         @relation(fields: [userId], references: [id])
   sector       Sector?       @relation(fields: [sectorId], references: [id])
   maintenances Maintenance[]
+  vaultCredentials VaultCredential[]
 
   @@map("assets")
 }
@@ -87,4 +89,57 @@ model Maintenance {
   asset Asset @relation(fields: [assetId], references: [id])
 
   @@map("maintenances")
+}
+
+model VaultCredential {
+  id                String   @id @default(cuid())
+  title             String
+  username          String
+  passwordEncrypted String
+  type              String   @default("OTHER")
+  assetId           String?
+  lastUsedAt        DateTime?
+  lastRotatedAt     DateTime?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  asset       Asset?           @relation(fields: [assetId], references: [id])
+  accessLogs  VaultAccessLog[]
+
+  @@index([assetId])
+  @@index([lastRotatedAt])
+  @@unique([title, username])
+  @@map("vault_credentials")
+}
+
+model VaultAccessLog {
+  id           String   @id @default(cuid())
+  credentialId String
+  userId       String?
+  action       String
+  createdAt    DateTime @default(now())
+
+  credential VaultCredential @relation(fields: [credentialId], references: [id], onDelete: Cascade)
+  user       User?           @relation(fields: [userId], references: [id])
+
+  @@index([credentialId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("vault_access_logs")
+}
+
+model NetworkSegment {
+  id        String   @id @default(cuid())
+  name      String
+  gateway   String
+  vlan      String   @unique
+  cidr      String   @unique
+  totalIps  Int      @default(254)
+  status    String   @default("ONLINE")
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@map("network_segments")
 }

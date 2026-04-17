@@ -37,6 +37,7 @@ type DashboardStats = {
   totalAssets: number
   totalUsers: number
   maintenanceCount: number
+  alertsCount: number
   assetsByStatus: AssetStatusItem[]
   recentAssets: RecentAsset[]
 }
@@ -102,7 +103,7 @@ export default function DashboardPage() {
     },
     {
       title: "Alertas",
-      value: "12",
+      value: stats?.alertsCount || 0,
       description: "Acoes sugeridas",
       icon: AlertCircle,
       color: "text-red-500",

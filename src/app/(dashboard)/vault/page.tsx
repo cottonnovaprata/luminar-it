@@ -1,38 +1,186 @@
 "use client"
 
 import React from "react"
-import { 
-  Lock, 
-  Shield, 
-  Eye, 
-  EyeOff, 
-  Copy, 
-  Search, 
-  Key, 
+import {
+  Lock,
+  Shield,
+  Eye,
+  EyeOff,
+  Copy,
+  Search,
+  Key,
   MoreVertical,
-  AlertTriangle
+  AlertTriangle,
+  Loader2,
+  Plus,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Modal } from "@/components/ui/modal"
 
-const credentials = [
-  { id: "1", title: "Admin Server DB", username: "root", lastUsed: "Há 2 horas", asset: "SRV-PROD-01", type: "Server" },
-  { id: "2", title: "Wi-Fi Visitantes", username: "guest_user", lastUsed: "Ontem, 14:00", asset: "AP-RECEP-01", type: "WiFi" },
-  { id: "3", title: "Painel AWS TI", username: "admin_cloud", lastUsed: "14 Abr, 10:00", asset: "Cloud", type: "Cloud" },
-  { id: "4", title: "SSH Firewall", username: "forti_admin", lastUsed: "12 Apr, 09:15", asset: "FW-CORE-01", type: "Network" },
-]
+type VaultCredential = {
+  id: string
+  title: string
+  username: string
+  type: string
+  assetLabel: string
+  lastUsedAt: string | null
+  lastRotatedAt: string | null
+  isStale: boolean
+}
+
+type VaultStats = {
+  totalCredentials: number
+  staleCredentials: number
+  recentViews: number
+  rotationLimitDays: number
+}
+
+type AssetOption = {
+  id: string
+  name: string
+  tag: string
+}
+
+const initialCredentialForm = {
+  title: "",
+  username: "",
+  password: "",
+  type: "OTHER",
+  assetId: "",
+}
+
+function formatLastUsed(date: string | null) {
+  if (!date) return "Nunca utilizado"
+  return new Date(date).toLocaleString("pt-BR")
+}
 
 export default function VaultPage() {
-  const [revealed, setRevealed] = React.useState<string[]>([])
+  const [stats, setStats] = React.useState<VaultStats | null>(null)
+  const [credentials, setCredentials] = React.useState<VaultCredential[]>([])
+  const [assets, setAssets] = React.useState<AssetOption[]>([])
+  const [loading, setLoading] = React.useState(true)
+  const [error, setError] = React.useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [revealed, setRevealed] = React.useState<Record<string, string>>({})
+  const [revealingId, setRevealingId] = React.useState<string | null>(null)
+  const [isModalOpen, setIsModalOpen] = React.useState(false)
+  const [savingCredential, setSavingCredential] = React.useState(false)
+  const [credentialForm, setCredentialForm] = React.useState(initialCredentialForm)
 
-  const toggleReveal = (id: string) => {
-    if (revealed.includes(id)) {
-      setRevealed(revealed.filter(i => i !== id))
-    } else {
-      setRevealed([...revealed, id])
+  const fetchData = React.useCallback(async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const [vaultRes, assetsRes] = await Promise.all([
+        fetch("/api/vault/credentials"),
+        fetch("/api/assets"),
+      ])
+
+      const vaultData = (await vaultRes.json().catch(() => ({}))) as {
+        error?: string
+        stats?: VaultStats
+        credentials?: VaultCredential[]
+      }
+
+      const assetsData = (await assetsRes.json().catch(() => [])) as Array<{
+        id: string
+        name: string
+        tag: string
+      }>
+
+      if (!vaultRes.ok) {
+        throw new Error(vaultData.error || "Falha ao carregar cofre")
+      }
+
+      setStats(vaultData.stats || null)
+      setCredentials(vaultData.credentials || [])
+      setAssets(Array.isArray(assetsData) ? assetsData : [])
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro inesperado")
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  React.useEffect(() => {
+    fetchData()
+  }, [fetchData])
+
+  const filteredCredentials = credentials.filter((credential) => {
+    const term = searchTerm.toLowerCase()
+    return (
+      credential.title.toLowerCase().includes(term) ||
+      credential.username.toLowerCase().includes(term) ||
+      credential.assetLabel.toLowerCase().includes(term) ||
+      credential.type.toLowerCase().includes(term)
+    )
+  })
+
+  async function revealCredential(id: string, mode: "VIEW" | "COPY") {
+    setRevealingId(id)
+    try {
+      const res = await fetch(`/api/vault/credentials/${id}/reveal`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode }),
+      })
+
+      const data = (await res.json().catch(() => ({}))) as { error?: string; password?: string }
+      if (!res.ok || !data.password) {
+        throw new Error(data.error || "Falha ao revelar credencial")
+      }
+
+      setRevealed((prev) => ({ ...prev, [id]: data.password as string }))
+      if (mode === "COPY" && navigator?.clipboard?.writeText) {
+        await navigator.clipboard.writeText(data.password)
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro inesperado")
+    } finally {
+      setRevealingId(null)
+    }
+  }
+
+  function hideCredential(id: string) {
+    setRevealed((prev) => {
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+  }
+
+  async function createCredential(e: React.FormEvent) {
+    e.preventDefault()
+    setSavingCredential(true)
+    try {
+      const res = await fetch("/api/vault/credentials", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: credentialForm.title,
+          username: credentialForm.username,
+          password: credentialForm.password,
+          type: credentialForm.type,
+          assetId: credentialForm.assetId || null,
+        }),
+      })
+
+      const data = (await res.json().catch(() => ({}))) as { error?: string }
+      if (!res.ok) {
+        throw new Error(data.error || "Falha ao criar credencial")
+      }
+
+      setCredentialForm(initialCredentialForm)
+      setIsModalOpen(false)
+      await fetchData()
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Erro inesperado")
+    } finally {
+      setSavingCredential(false)
     }
   }
 
@@ -41,84 +189,227 @@ export default function VaultPage() {
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Cofre de Credenciais</h1>
-          <p className="text-muted-foreground">Armazenamento seguro de senhas e chaves de acesso com auditoria.</p>
+          <p className="text-muted-foreground">Armazenamento seguro com auditoria de visualizacao e copia.</p>
         </div>
-        <div className="flex items-center gap-2">
-           <Badge variant="outline" className="h-10 px-3 border-amber-500/50 text-amber-500 bg-amber-500/5">
-              <AlertTriangle className="mr-2 h-4 w-4" />
-              12 senhas não alteradas há +3 meses
-           </Badge>
-           <Button className="bg-primary">
-            <Lock className="mr-2 h-4 w-4" />
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant="outline" className="h-10 px-3 border-amber-500/50 text-amber-500 bg-amber-500/5">
+            <AlertTriangle className="mr-2 h-4 w-4" />
+            {stats?.staleCredentials ?? 0} senhas sem rotacao recente
+          </Badge>
+          <Button className="bg-primary" onClick={() => setIsModalOpen(true)}>
+            <Plus className="mr-2 h-4 w-4" />
             Nova Credencial
           </Button>
         </div>
       </div>
 
+      {error && (
+        <Card className="border-destructive/30 bg-destructive/5">
+          <CardContent className="pt-6 text-sm text-destructive">{error}</CardContent>
+        </Card>
+      )}
+
       <Card className="bg-primary/5 border-primary/20">
         <CardContent className="p-4 flex items-center gap-4">
-           <div className="p-3 bg-primary/10 rounded-full">
-              <Shield className="h-6 w-6 text-primary" />
-           </div>
-           <div>
-              <p className="font-semibold text-primary">Segurança Ativa</p>
-              <p className="text-sm text-primary/80">Todas as visualizações são registradas no log de auditoria imutável.</p>
-           </div>
+          <div className="p-3 bg-primary/10 rounded-full">
+            <Shield className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <p className="font-semibold text-primary">Seguranca Ativa</p>
+            <p className="text-sm text-primary/80">
+              {stats?.recentViews ?? 0} acessos auditados nas ultimas 24h.
+            </p>
+          </div>
         </CardContent>
       </Card>
 
       <div className="relative w-full">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        <Input placeholder="Buscar credencial por nome, usuário ou ativo..." className="pl-10 h-11" />
+        <Input
+          placeholder="Buscar credencial por nome, usuario ou ativo..."
+          className="pl-10 h-11"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {credentials.map((cred) => (
-          <Card key={cred.id} className="overflow-hidden group hover:border-primary/50 transition-all">
-            <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                  <Key className="h-5 w-5" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">{cred.title}</CardTitle>
-                  <CardDescription className="text-xs">{cred.asset}</CardDescription>
-                </div>
-              </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8">
-                <MoreVertical className="h-4 w-4" />
-              </Button>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                 <p className="text-[10px] uppercase font-bold text-muted-foreground">Usuário</p>
-                 <div className="flex items-center justify-between bg-muted/30 p-2 rounded border border-transparent hover:border-muted font-mono text-sm">
-                    <span>{cred.username}</span>
-                    <Button variant="ghost" size="icon" className="h-6 w-6"><Copy className="h-3 w-3" /></Button>
-                 </div>
-              </div>
-              <div className="space-y-1.5">
-                 <p className="text-[10px] uppercase font-bold text-muted-foreground">Senha</p>
-                 <div className="flex items-center justify-between bg-zinc-950 text-zinc-100 p-2 rounded font-mono text-sm">
-                    <span>{revealed.includes(cred.id) ? "P@ssw0rd123!" : "••••••••••••••"}</span>
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      className="h-6 w-6 hover:bg-zinc-800"
-                      onClick={() => toggleReveal(cred.id)}
-                    >
-                      {revealed.includes(cred.id) ? <EyeOff className="h-3 w-3" /> : <Eye className="h-3 w-3" />}
-                    </Button>
-                 </div>
-              </div>
+        {loading ? (
+          <Card className="md:col-span-2 lg:col-span-3">
+            <CardContent className="p-8 text-center">
+              <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
             </CardContent>
-            <div className="px-6 py-3 bg-muted/30 border-t flex items-center justify-between">
-               <span className="text-[10px] text-muted-foreground">Último uso: {cred.lastUsed}</span>
-               <Badge variant="secondary" className="text-[10px] uppercase">{cred.type}</Badge>
-            </div>
           </Card>
-        ))}
+        ) : filteredCredentials.length === 0 ? (
+          <Card className="md:col-span-2 lg:col-span-3">
+            <CardContent className="p-8 text-center text-muted-foreground">
+              Nenhuma credencial encontrada.
+            </CardContent>
+          </Card>
+        ) : (
+          filteredCredentials.map((credential) => {
+            const currentSecret = revealed[credential.id]
+            const isRevealed = typeof currentSecret === "string"
+            const isPendingReveal = revealingId === credential.id
+
+            return (
+              <Card key={credential.id} className="overflow-hidden group hover:border-primary/50 transition-all">
+                <CardHeader className="pb-3 flex flex-row items-start justify-between space-y-0">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                      <Key className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-base">{credential.title}</CardTitle>
+                      <CardDescription className="text-xs">{credential.assetLabel}</CardDescription>
+                    </div>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Usuario</p>
+                    <div className="flex items-center justify-between bg-muted/30 p-2 rounded border border-transparent hover:border-muted font-mono text-sm">
+                      <span>{credential.username}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => revealCredential(credential.id, "COPY")}
+                        disabled={isPendingReveal}
+                      >
+                        {isPendingReveal ? <Loader2 className="h-3 w-3 animate-spin" /> : <Copy className="h-3 w-3" />}
+                      </Button>
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <p className="text-[10px] uppercase font-bold text-muted-foreground">Senha</p>
+                    <div className="flex items-center justify-between bg-zinc-950 text-zinc-100 p-2 rounded font-mono text-sm">
+                      <span>{isRevealed ? currentSecret : "••••••••••••••••"}</span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-6 w-6 hover:bg-zinc-800"
+                        onClick={() => (isRevealed ? hideCredential(credential.id) : revealCredential(credential.id, "VIEW"))}
+                        disabled={isPendingReveal}
+                      >
+                        {isPendingReveal ? (
+                          <Loader2 className="h-3 w-3 animate-spin" />
+                        ) : isRevealed ? (
+                          <EyeOff className="h-3 w-3" />
+                        ) : (
+                          <Eye className="h-3 w-3" />
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+                <div className="px-6 py-3 bg-muted/30 border-t flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground">Ultimo uso: {formatLastUsed(credential.lastUsedAt)}</span>
+                  <Badge variant={credential.isStale ? "warning" : "secondary"} className="text-[10px] uppercase">
+                    {credential.type}
+                  </Badge>
+                </div>
+              </Card>
+            )
+          })
+        )}
       </div>
+
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} title="Nova Credencial">
+        <form className="space-y-4" onSubmit={createCredential}>
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="vault-title">
+              Nome da credencial
+            </label>
+            <Input
+              id="vault-title"
+              value={credentialForm.title}
+              onChange={(e) => setCredentialForm((prev) => ({ ...prev, title: e.target.value }))}
+              placeholder="Painel AWS TI"
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="vault-username">
+                Usuario
+              </label>
+              <Input
+                id="vault-username"
+                value={credentialForm.username}
+                onChange={(e) => setCredentialForm((prev) => ({ ...prev, username: e.target.value }))}
+                placeholder="admin_cloud"
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-medium" htmlFor="vault-type">
+                Tipo
+              </label>
+              <select
+                id="vault-type"
+                className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+                value={credentialForm.type}
+                onChange={(e) => setCredentialForm((prev) => ({ ...prev, type: e.target.value }))}
+              >
+                <option value="SERVER">SERVER</option>
+                <option value="NETWORK">NETWORK</option>
+                <option value="WIFI">WIFI</option>
+                <option value="CLOUD">CLOUD</option>
+                <option value="APP">APP</option>
+                <option value="OTHER">OTHER</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="vault-password">
+              Senha
+            </label>
+            <Input
+              id="vault-password"
+              type="password"
+              value={credentialForm.password}
+              onChange={(e) => setCredentialForm((prev) => ({ ...prev, password: e.target.value }))}
+              placeholder="Senha forte"
+              required
+            />
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium" htmlFor="vault-asset">
+              Ativo relacionado
+            </label>
+            <select
+              id="vault-asset"
+              className="h-10 w-full rounded-md border bg-background px-3 text-sm"
+              value={credentialForm.assetId}
+              onChange={(e) => setCredentialForm((prev) => ({ ...prev, assetId: e.target.value }))}
+            >
+              <option value="">Sem ativo</option>
+              {assets.map((asset) => (
+                <option key={asset.id} value={asset.id}>
+                  {asset.tag} - {asset.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="flex justify-end gap-2 pt-2">
+            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)} disabled={savingCredential}>
+              Cancelar
+            </Button>
+            <Button type="submit" disabled={savingCredential}>
+              {savingCredential ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Lock className="mr-2 h-4 w-4" />}
+              Salvar credencial
+            </Button>
+          </div>
+        </form>
+      </Modal>
     </div>
   )
 }
