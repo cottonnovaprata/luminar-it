@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "smoke:checkpoint": "node scripts/smoke-checkpoint.mjs",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "eslint"
